@@ -1,80 +1,50 @@
-import React, { useState } from "react";
-import Dropdown from "./Dropdown";
-import './App.css';
+const express = require("express");
+const cors = require("cors");
 
-function App() {
-  const [jsonInput, setJsonInput] = useState("");
-  const [isValidJson, setIsValidJson] = useState(true);
-  const [response, setResponse] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  
-  const handleJsonChange = (event) => {
-    setJsonInput(event.target.value);
-  };
+const app = express();
+app.use(cors()); // Enable CORS
+app.use(express.json());
 
-  const validateJson = (input) => {
+app
+  .route("/bfhl")
+  .get((req, res) => {
+    res.status(200).json({ operation_code: 1 });
+  })
+  .post((req, res) => {
     try {
-      JSON.parse(input);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
+      const data = req.body.data || [];
+      const numbers = [];
+      const alphabets = [];
+      let highestLoweralphabet = "";
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (validateJson(jsonInput)) {
-      setIsValidJson(true);
-      const parsedInput = JSON.parse(jsonInput);
-      
-      const apiresponse = await fetch("https://bfhl-shreyansh-singh.onrender.com/bfhl", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: parsedInput.data }),
+      for (const item of data) {
+        if (!isNaN(item)) {
+          numbers.push(item);
+        } else if (item.length === 1 && isNaN(item)) {
+          if (item >= 'a' && item <= 'z') {
+            alphabets.push(item);
+            if (!highestLoweralphabet || item > highestLoweralphabet) {
+              highestLoweralphabet = item;
+            }
+          }
+        }
+      }
+
+      res.json({
+        is_success: true,
+        user_id: "shreyansh_kumar_singh_14062004",
+        email: "shreyanshkumar.singh2021@vitbhopal.ac.in",
+        roll_number: "21BEC10848",
+        numbers: numbers,
+        alphabets: alphabets,
+        highestLoweralphabet: highestLoweralphabet ? [highestLoweralphabet] : [],
       });
-      
-      const result = await apiresponse.json();
-      setResponse(result);
-    } else {
-      setIsValidJson(false);
+    } catch (error) {
+      res.status(500).json({ error: "An error occurred while processing the request." });
     }
-  };
+  });
 
-  const handleDropdownChange = (selected) => {
-    setSelectedOptions(selected);
-  };
-
-  const renderResponse = () => {
-    if (!response) return null;
-    console.log(response);
-    
-    return (
-      <div>
-        <h3>Response:</h3>
-        <pre>{JSON.stringify(response, null, 2)}</pre>
-      </div>
-    );
-  };
-
-  return (
-    <div className="App">
-      <h1>21BEC10848</h1>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={jsonInput}
-          onChange={handleJsonChange}
-          placeholder='Enter JSON here'
-        />
-        {!isValidJson && <p style={{ color: "red" }}>Invalid JSON format</p>}
-        <button type="submit">Submit</button>
-      </form>
-
-      {response && <Dropdown onChange={handleDropdownChange} />}
-      {renderResponse()}
-    </div>
-  );
-}
-
-export default App;
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
