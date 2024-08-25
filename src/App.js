@@ -15,7 +15,7 @@ function App() {
   const validateJson = (input) => {
     try {
       const parsed = JSON.parse(input);
-      return parsed && typeof parsed === 'object' && parsed.hasOwnProperty('data');
+      return parsed && typeof parsed === 'object' && Array.isArray(parsed.data);
     } catch (error) {
       return false;
     }
@@ -75,7 +75,7 @@ function App() {
           onChange={handleJsonChange}
           placeholder='Enter JSON here'
         />
-        {!isValidJson && <p style={{ color: "red" }}>Invalid JSON format</p>}
+        {!isValidJson && <p style={{ color: "red" }}>Invalid JSON format or missing "data" array</p>}
         <button type="submit">Submit</button>
       </form>
 
