@@ -12,20 +12,19 @@ function App() {
     setJsonInput(event.target.value);
   };
 
-  const validateJson = (input) => {
-    try {
-      const parsed = JSON.parse(input);
-      return parsed && typeof parsed === 'object' && Array.isArray(parsed.data);
-    } catch (error) {
-      return false;
-    }
-  };
+  // const validateJson = (input) => {
+  //   try {
+  //     const parsed = JSON.parse(input);
+  //     return parsed && typeof parsed === 'object' && Array.isArray(parsed.data);
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (validateJson(jsonInput)) {
       setIsValidJson(true);
-      const parsedInput = JSON.parse(jsonInput);
+      // const parsedInput = JSON.parse(jsonInput);
       
       try {
         const apiresponse = await fetch("https://bfhl-shreyansh-singh.onrender.com/bfhl", {
@@ -33,7 +32,7 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ data: parsedInput.data }),
+          body: JSON.parse({data:jsonInput}),
         });
         
         if (!apiresponse.ok) {
@@ -41,14 +40,11 @@ function App() {
         }
 
         const result = await apiresponse.json();
-        setResponse(result);
+        setResponse(apiresponse);
       } catch (error) {
         console.error("Error fetching data:", error);
         setIsValidJson(false);
       }
-    } else {
-      setIsValidJson(false);
-    }
   };
 
   const handleDropdownChange = (selected) => {
@@ -68,19 +64,20 @@ function App() {
 
   return (
     <div className="App">
-      <h1>21BEC10848</h1>
+      <h1>21BCE10848</h1>
       <form onSubmit={handleSubmit}>
         <textarea
           value={jsonInput}
-          onChange={handleJsonChange}
+          // onChange={handleJsonChange}
           placeholder='Enter JSON here'
         />
-        {!isValidJson && <p style={{ color: "red" }}>Invalid JSON format or missing "data" array</p>}
+        {/* {!isValidJson && <p style={{ color: "red" }}>Invalid JSON format or missing "data" array</p>} */}
         <button type="submit">Submit</button>
       </form>
 
       {response && <Dropdown onChange={handleDropdownChange} />}
       {renderResponse()}
+      {response}
     </div>
   );
 }
