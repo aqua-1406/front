@@ -1,85 +1,70 @@
-import React, { useState } from "react";
-import Dropdown from "./Dropdown";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 
-function App() {
-  const [jsonInput, setJsonInput] = useState("");
-  const [isValidJson, setIsValidJson] = useState(true);
-  const [response, setResponse] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  
-  const handleJsonChange = (event) => {
-    setJsonInput(event.target.value);
-  };
+function JsonFilter() {
+  const [jsonData, setJsonData] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState('numbers');
 
-  const validateJson = (input) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const parsed = JSON.parse(input);
-      return parsed && typeof parsed === 'object' && Array.isArray(parsed.data);
+      const response = await axios.post('https://bfhl-shreyansh-singh.onrender.com/bfhl', { data: JSON.parse(jsonData) });
+
+      console.log('Response:', response.data);
+      const { numbers, alphabets, highest_lowercase_alphabet } = response.data;
+
+      switch (selectedFilter) {
+        case 'numbers':
+          setFilteredData(numbers);
+          break;
+        case 'alphabets':
+          setFilteredData(alphabets);
+          break;
+        case 'hla':
+          setFilteredData(highest_lowercase_alphabet);
+          break;
+        default:
+          setFilteredData([]);
+      }
     } catch (error) {
-      return false;
+      console.error('Error making the request:', error);
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-      setIsValidJson(true);
-      // const parsedInput = JSON.parse(jsonInput);
-      
-      try {
-        const apiresponse = await fetch("https://bfhl-shreyansh-singh.onrender.com/bfhl", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.parse({data:jsonInput}),
-        });
-        
-        if (!apiresponse.ok) {
-          throw new Error("Network response was not ok.");
-        }
-
-        const result = await apiresponse.json();
-        setResponse(apiresponse);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setIsValidJson(false);
-      }
+  const handleFilterChange = (e) => {
+    setSelectedFilter(e.target.value);
   };
 
-  const handleDropdownChange = (selected) => {
-    setSelectedOptions(selected);
-  };
-
-  const renderResponse = () => {
-    if (!response) return null;
-    
-    return (
-      <div>
-        <h3>Response:</h3>
-        <pre>{JSON.stringify(response, null, 2)}</pre>
-      </div>
-    );
-  };
+  useEffect(() => {
+    // Re-filter data if selectedFilter changes
+    handleSubmit(new Event('submit'));
+  }, [selectedFilter]);
 
   return (
-    <div className="App">
-      <h1>21BCE10848</h1>
+    <div>
+      <h1>JSON Filter</h1>
       <form onSubmit={handleSubmit}>
-        <textarea
-          value={jsonInput}
-          // onChange={handleJsonChange}
-          placeholder='Enter JSON here'
-        />
-        {/* {!isValidJson && <p style={{ color: "red" }}>Invalid JSON format or missing "data" array</p>} */}
+        <label>API Input:</label>
+        <input type="text" value={jsonData} onChange={(e) => setJsonData(e.target.value)} />
         <button type="submit">Submit</button>
       </form>
 
-      {response && <Dropdown onChange={handleDropdownChange} />}
-      {renderResponse()}
-      {response}
+      <div>
+        <label>Multi Filter:</label>
+        <select value={selectedFilter} onChange={handleFilterChange}>
+          <option value="numbers">Numbers</option>
+          <option value="alphabets">Alphabets</option>
+          <option value="hla">Highest Lowercase Alphabets</option>
+        </select>
+      </div>
+
+      <h2>Filtered Response</h2>
+      <p>{selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}: {filteredData.join(', ')}</p>
     </div>
   );
 }
 
-export default App;
+export default JsonFilter;
