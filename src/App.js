@@ -48,22 +48,12 @@ function App() {
 
   const renderResponse = () => {
     if (!response) return null;
-    let filteredResponse = {};
     
-    if (selectedOptions.includes("Alphabets")) {
-      filteredResponse.alphabets = response.alphabets;
-    }
-    if (selectedOptions.includes("Numbers")) {
-      filteredResponse.numbers = response.numbers;
-    }
-    if (selectedOptions.includes("Highest lowercase alphabet")) {
-      filteredResponse.highestLoweralphabet = response.highestLoweralphabet;
-    }
     
     return (
       <div>
         <h3>Response:</h3>
-        <pre>{JSON.stringify(filteredResponse, null, 2)}</pre>
+        <pre>{JSON.stringify(response, null, 2)}</pre>
       </div>
     );
   };
