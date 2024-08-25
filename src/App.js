@@ -12,14 +12,14 @@ function App() {
     setJsonInput(event.target.value);
   };
 
-  // const validateJson = (input) => {
-  //   try {
-  //     const parsed = JSON.parse(input);
-  //     return parsed && typeof parsed === 'object' && Array.isArray(parsed.data);
-  //   } catch (error) {
-  //     return false;
-  //   }
-  // };
+  const validateJson = (input) => {
+    try {
+      const parsed = JSON.parse(input);
+      return parsed && typeof parsed === 'object' && Array.isArray(parsed.data);
+    } catch (error) {
+      return false;
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
