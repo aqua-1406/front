@@ -27,7 +27,7 @@ function App() {
       setIsValidJson(true);
       const parsedInput = JSON.parse(jsonInput);
       
-      const response = await fetch("https://bfhl-shreyansh-singh.onrender.com/bfhl", {
+      const apiresponse = await fetch("https://bfhl-shreyansh-singh.onrender.com/bfhl", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +35,7 @@ function App() {
         body: JSON.stringify({ data: parsedInput.data }),
       });
       
-      const result = await response.json();
+      const result = await apiresponse.json();
       setResponse(result);
     } else {
       setIsValidJson(false);
@@ -48,7 +48,7 @@ function App() {
 
   const renderResponse = () => {
     if (!response) return null;
-    
+    console.log(response);
     
     return (
       <div>
