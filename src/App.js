@@ -14,7 +14,7 @@ function JsonFilter() {
       const response = await axios.post('https://bfhl-shreyansh-singh.onrender.com/bfhl', { data: JSON.parse(jsonData) });
 
       console.log('Response:', response.data);
-      const { numbers, alphabets, highest_lowercase_alphabet } = response.data;
+      const { numbers, alphabets, highestLoweralphabet } = response.data;
 
       switch (selectedFilter) {
         case 'numbers':
@@ -24,7 +24,7 @@ function JsonFilter() {
           setFilteredData(alphabets);
           break;
         case 'hla':
-          setFilteredData(highest_lowercase_alphabet);
+          setFilteredData(highestLoweralphabet);
           break;
         default:
           setFilteredData([]);
